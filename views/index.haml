@@ -1,0 +1,25 @@
+.row
+  .span2
+    %strong Outbound status:
+  .span2
+    - if @outbound == true
+      %span.label.label-success Running
+    - else
+      %span.label.label-important Stopped
+  .span2
+    %a{:href => '/start_outbound', :class => "btn btn-small"}> Start
+    &nbsp;
+    %a{:href => '/stop_outbound', :class => "btn btn-small"}> Stop
+
+.row
+  .span2
+    %strong Inbound status:
+  .span2
+    - if @inbound == true
+      %span.label.label-success Running
+    - else
+      %span.label.label-important Stopped
+  .span2
+    %a{:href => '/start_inbound', :class => "btn btn-small"}> Start
+    &nbsp;
+    %a{:href => '/stop_inbound', :class => "btn btn-small"}> Stop

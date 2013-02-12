@@ -1,0 +1,8 @@
+*.gem
+/.redcar
+config/newrelic.yml
+config/settings-radltd.yml
+config/deploy.rb
+config/unicorn.rb
+Capfile
+/log

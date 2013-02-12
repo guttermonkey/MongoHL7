@@ -1,0 +1,9 @@
+hl7_output_ip: <IP Address>
+hl7_output_port: <Port>
+hl7_input_port: <Port>
+rabbitmq_address: <IP Address>
+rabbitmq_channel: <Channel Name>
+mongo_ip: <IP Address>
+mongo_port: <Port>
+mongo_db: <Database Name>
+mongo_collection: <Collection Name>
