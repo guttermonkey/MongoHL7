@@ -7,8 +7,8 @@ require './lib/hl7helpers'
 module HL7Server
   def post_init
     # Set up the MongoDB connection for retrieving the records
-    db = Mongo::MongoClient.new("10.1.23.202", 27017).db("halcyon_mongo_development")
-    visits = db.collection("visits")
+    db = Mongo::MongoClient.new(settings.mongo_ip, settings.mongo_port).db(settings.mongo_db)
+    collection = db.collection(settings.mongo_collection)
   end
   
   def receive_data data
@@ -44,27 +44,27 @@ module HL7Server
       
       if message[:ORC].e1.match(/^CA/)
         # Deletion message, remove from db
-        visits.remove("_id" => message[:OBR].e2)
+        collection.remove("_id" => message[:OBR].e2)
       
       else
         # New appointment message, create new record in db.
-        visit = HL7Helpers::from_hl7(message)
-        visits.update({"_id" => message[:OBR].e2}, visit, :upsert => true)
+        item = HL7Helpers::from_hl7(message)
+        collection.update({"_id" => message[:OBR].e2}, item, :upsert => true)
       end
       
     elsif message_type == "ADT" && message_code != "A34"
       # Update message
-      visit = HL7Helpers::from_hl7(message)
-        visits.update({"_id" => message[:OBR].e2}, visit, :upsert => true)
+      item = HL7Helpers::from_hl7(message)
+      collection.update({"_id" => message[:OBR].e2}, item, :upsert => true)
       
     elsif message_type == "ADT"
       # Update MRN only message, should affect all instances of mrn
-      visits.update({"_id" => message[:MRG].e0}, {"$set" => {"mrn" => message[:PID].e3}})
+      collection.update({"_id" => message[:MRG].e0}, {"$set" => {"mrn" => message[:PID].e3}})
     end
 
     # Acknowledge receipt to CorePoint
     ack_msg = HL7::Message.new
-    msh = HL7::Message::Segment::MSH.new("MSH|^~\\&|HALCYON|Radiology Ltd|||||ACK|#{message[:MSH].e9}|P|2.3||||NE|")
+    msh = HL7::Message::Segment::MSH.new("MSH|^~\\&|#{settings.application_name}|#{settings.org_name}|||||ACK|#{message[:MSH].e9}|P|2.3||||NE|")
     msa = HL7::Message::Segment::MSA.new("MSA|AA||MSG OK|")
     ack_msg << msh << msa
     send_data ack_msg.to_mllp

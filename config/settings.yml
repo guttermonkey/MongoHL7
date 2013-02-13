@@ -7,3 +7,5 @@ mongo_ip: <IP Address>
 mongo_port: <Port>
 mongo_db: <Database Name>
 mongo_collection: <Collection Name>
+application_name: <Name of Application for HL7 ack msgs>
+org_name: <Name of Organization for HL7 ack msgs>
